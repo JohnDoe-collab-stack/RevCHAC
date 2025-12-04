@@ -1,4 +1,4 @@
-# Dynamic halting, CH-profiles and operative AC beyond internalisation in ZFC
+# RevCHAC
 
 This repository currently consists of a single Lean file implementing the following architecture:
 
