@@ -1,4 +1,4 @@
-#RevCHAC
+# Dynamic halting, CH-profiles and operative AC beyond internalisation in ZFC
 
 This repository currently consists of a single Lean file implementing the following architecture:
 
@@ -22,7 +22,7 @@ The file starts by fixing:
 - a satisfaction relation
   ```lean
   Sat : Model → Sentence → Prop
-````
+```
 
 From this, it defines the usual Galois connection between sets of sentences and classes of models:
 
@@ -467,3 +467,7 @@ At this stage, the file already provides a complete, formal skeleton of the two-
 
 1. No perfect internal halting predicate for `RealHalts`.
 2. Consequently, no perfect internalisation of the **specific operative AC** induced by the Rev–CH–AC dynamic architecture.
+
+```
+::contentReference[oaicite:0]{index=0}
+```
