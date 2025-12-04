@@ -1,5 +1,8 @@
 # RevCHAC
 
+> **Lean Version:** `leanprover/lean4:v4.26.0-rc2`
+> **Main File:** `RevCHAC/RevCHAC.lean`
+
 This repository currently consists of a single Lean file implementing the following architecture:
 
 - a purely semantic Galois layer over a satisfaction relation,
