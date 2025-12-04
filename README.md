@@ -468,6 +468,3 @@ At this stage, the file already provides a complete, formal skeleton of the two-
 1. No perfect internal halting predicate for `RealHalts`.
 2. Consequently, no perfect internalisation of the **specific operative AC** induced by the Rev–CH–AC dynamic architecture.
 
-```
-::contentReference[oaicite:0]{index=0}
-```
