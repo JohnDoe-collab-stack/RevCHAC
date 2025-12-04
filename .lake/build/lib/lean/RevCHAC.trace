@@ -1,0 +1,33 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["8c391c978559220f.olean"],
+  "i": "29a645ca7520ad85.ilean",
+  "c": "bc3683d7fb0a53b3.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\Cli\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\batteries\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\Qq\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\aesop\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\proofwidgets\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\LeanSearchClient\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\plausible\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\build\\lib\\lean c:\\Users\\frederick.loubli.TKS\\.elan\\toolchains\\leanprover--lean4---v4.26.0-rc2\\bin\\lean.exe C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\RevCHAC\\RevCHAC.lean -o C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\build\\lib\\lean\\RevCHAC.olean -i C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\build\\lib\\lean\\RevCHAC.ilean -c C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\build\\ir\\RevCHAC.c --setup C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\.lake\\build\\ir\\RevCHAC.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["RevCHAC:deps",
+   [["deps",
+     [["RevCHAC/RevCHAC:extraDep", [["@RevCHAC:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Mathlib.Data.Set.Basic transitive imports (legacy)",
+         "73ae99b392679500"],
+        ["Mathlib.Data.Set.Basic:importAllArts", "9fd77f9cb8ed8f36"],
+        ["Mathlib.Data.Nat.Basic transitive imports (legacy)",
+         "85b52655212c4d2c"],
+        ["Mathlib.Data.Nat.Basic:importAllArts", "788beba426182216"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.26.0, commit 9d4ad1273f6cea397c3066c2c83062a4410d16bf",
+   "c1ab21c0a088cff7"],
+  ["C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\LogicDissoc\\RevCHAC\\RevCHAC\\RevCHAC.lean",
+   "55946dc478900be1"],
+  ["options", "00000000000006bb"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "91b0f43f4c18b9d8"}
