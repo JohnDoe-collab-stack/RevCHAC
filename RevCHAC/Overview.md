@@ -4,11 +4,7 @@
 
 - A static Galois-style semantics (`ModE`, `ThE`, `CloE`) over a satisfaction relation `Sat`.
 - A dynamic halting layer (`Trace`, `up`, `Halts`) plus a reverse halting operator `Rev` built from an abstract kit `RHKit`.
-- A local reading `LR : (Set Sentence) → Sentence → Trace` and a bridge saying:
-  \[
-    φ ∈ CloE(Γ) \;\Longleftrightarrow\; Halts(LR\,Γ\,φ),
-  \]
-  which transfers semantic consequence into halting of traces.
+- A local reading `LR : (Set Sentence) → Sentence → Trace` and a bridge saying: `φ ∈ CloE(Γ) ↔ Halts(LR, Γ, φ)`, which transfers semantic consequence into halting of traces.
 - An abstract Turing–Gödel context encoding the diagonal argument against total, correct and complete internal halting predicates.
 - A `RevCHACSystem` tying together:
   - real halting `RealHalts`,
