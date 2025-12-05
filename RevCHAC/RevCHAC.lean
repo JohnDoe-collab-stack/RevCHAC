@@ -10,24 +10,27 @@ This file shows, using only:
 * a robust halting layer (`Rev`, `Rev0`, `Halts`),
 
 that once we add a local reading and a bridge
-`(Γ ⊨ φ) ↔ Halts(LR Γ φ)`, we get:
+`(Γ ⊨ φ) ↔ Halts (LR Γ φ)`, we obtain the equivalence
 
   `φ ∈ CloE Γ ↔ verdict K LR Γ φ`
 
 for every admissible reverse–halting kit `K`.
 
 Intuitively: the Galois/ZFC layer (`CloE`, `ModE`, `ThE`) captures
-only the *static* picture; `Rev` + its invariance add a canonical
-dynamic structure (the robust verdict) that the static layer alone
-does not specify.
+only the *static* picture; `Rev`, together with its invariance, adds
+a canonical dynamic structure (the robust verdict) that the static
+layer alone does not specify.
 
 At the meta-level, this canonical dynamic can be organised into a
 single concrete Rev–CH–AC system with an associated dynamic choice
-operator `AC_dyn` on halting codes. Level 2 of the file shows that,
-in a Turing–Gödel context with a reflection principle for `RealHalts`,
-no recursive consistent theory of ZFC strength can internalise this
-specific operative AC as one total, correct and complete internal
-mechanism.
+operator `AC_dyn` on halting codes.
+
+Level 2 of the file is entirely meta-theoretic: in a Turing–Gödel
+context equipped with a reflection principle for `RealHalts`, it
+shows that no recursive consistent theory of ZFC strength can
+internalise this specific operative AC as a single total internal
+mechanism (predicate/function) that is correct and complete for
+the real halting profile.
 -/
 
 universe u v
@@ -203,9 +206,12 @@ Canonical invariance of `Rev0` with respect to `Halts`.
 For any reverse–halting kit `K` satisfying `DetectsMonotone K`,
 the verdict `Rev0 K` on traces coincides extensionally with the
 plain halting predicate `Halts`. This is *not* a definitional
-equality, but an invariance result: the behaviour of `Rev` on
-traces is independent of the particular implementation of
-`K.Proj`, as soon as it detects monotone families exactly as `∃ n`.
+equality, but an invariance result: the observable behaviour of
+`Rev` on traces is independent of the particular implementation
+of `K.Proj`, as soon as it detects monotone families exactly as `∃ n`.
+
+In other words, many different reverse–halting kits collapse to
+the same robust halting predicate `Halts` when restricted to traces.
 -/
 lemma Rev0_eq_Halts (DK : DetectsMonotone K) :
     ∀ T, Rev0 K T ↔ Halts T := by
@@ -522,9 +528,7 @@ end RevCH
 
 
 /-
-
-
-  Strategy formalisation:
+  Strategy formalisation (meta-level roadmap):
 
   - Real halting profile  : RealHalts : Code → Prop
   - Dynamic halting (Rev) : Halts_rev : Prog → Prop
@@ -535,10 +539,9 @@ end RevCH
     • RealHalts(e)  ↔  Halts_rev (embed e)
     • Halts_rev(p)  ↔  CH_local p
 
-  Meta-theorem:
+  Meta-theorem (Turing–Gödel, abstracted in this file):
     Any internal predicate H(e) in a recursive consistent theory T
-    that is total/correct/complete for RealHalts is impossible
-    (Turing + Gödel).
+    that is total/correct/complete for RealHalts is impossible.
 
   Conclusion:
     Fix once and for all a concrete Rev–CH–AC system `S` as above and
@@ -750,9 +753,9 @@ This structure captures what it would mean for ZFC (or a similar
 recursive consistent theory T) to *clone* the specific external
 dynamic choice `AC_dyn` into a single internal mechanism:
 
-- an internal choice function `F_int` (total on all codes),
-- a decoding `Decode : W_int → Witness` linking internal to external,
-- perfect alignment: on each code `e` that really halts, `F_int e`
+* an internal choice function `F_int` (total on all codes),
+* a decoding `Decode : W_int → Witness` linking internal to external,
+* perfect alignment: on each code `e` that really halts, `F_int e`
   decodes exactly to the external `AC_dyn ctx S e h`.
 
 If such a structure existed for this fixed Rev–CH–AC system `S`, it
@@ -816,24 +819,21 @@ lemma H_from_Fint_iff_RealHalts
     exact ⟨h_real, I.correct_on_halting e h_real⟩
 
 /--
-Axiom of reflection for `RealHalts`:
+Axiom of reflection for `RealHalts`.
 
 If a meta-level predicate `H : Code → Prop` is extensionally equal to
 `ctx.RealHalts`, then it can be reflected as an internal predicate
-`H_enc : Code → PropT` such that `T` proves `H_enc e` exactly when
-`e` really halts, and proves `¬ H_enc e` exactly when `e` really
-does not halt.
+`H_enc : Code → PropT` such that:
 
-Mathematically, this captures the idea that if a theory could fully
-internalise the (meta) halting profile, it would validate a perfect
-internal halting predicate, which we know is impossible by Turing–Gödel.
+* whenever a code `e` really halts, T proves `H_enc e`,
+* whenever a code `e` really does not halt, T proves `¬ H_enc e`.
 
-This axiom is the key bridge between the operative AC layer (where
-`H_from_Fint` is constructed at the meta-level from `InternalisationWithAC`)
-and the internal theory `T` (where contradictions with `no_full_internalisation`
-can be derived). In particular, it isolates precisely the point at which
-an internalisation of the full real halting profile would amount to
-postulating a perfect internal halting predicate.
+Conceptually, this isolates the exact point where a full
+internalisation of the real halting profile is being postulated:
+assuming such a reflection principle for `RealHalts` is what turns
+a meta-level description of halting into a candidate perfect internal
+halting predicate, and therefore exposes it to the Turing–Gödel
+impossibility theorem.
 -/
 axiom reflect_RealHalts :
   ∀ {Code PropT : Type}
