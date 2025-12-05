@@ -17,11 +17,7 @@
 1. At the “semantic + dynamic” level:
 
    - `Rev0 K` is extensionally equal to `Halts` on traces for any `RHKit` satisfying `DetectsMonotone K`.
-   - Given a local reading `LR` and a `DynamicBridge`, one gets:
-     \[
-       φ ∈ CloE(Γ) \;\Longleftrightarrow\; verdict\,K\,LR\,Γ\,φ
-     \]
-     for every admissible kit `K`.
+   - Given a local reading `LR` and a `DynamicBridge`, one gets: `φ ∈ CloE(Γ) ↔ verdict(K, LR, Γ, φ)` for every admissible kit `K`.
 
 2. At the “meta-theoretic” level (Turing–Gödel context):
 
