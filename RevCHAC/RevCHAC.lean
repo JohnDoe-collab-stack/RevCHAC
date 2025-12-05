@@ -56,8 +56,6 @@ def CloE (Γ : Set Sentence) : Set Sentence :=
 
 namespace LogicDissoc
 
-open Classical
-
 open Set
 
 variable {Sat}
