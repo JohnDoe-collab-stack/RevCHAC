@@ -671,8 +671,8 @@ def H_from_Fint (I : InternalisationWithAC ctx S) (e : Code) : Prop :=
   ∃ h : ctx.RealHalts e, I.Decode (I.F_int e) = AC_dyn ctx S e h
 
 /--
-`H_from_Fint` décide exactement `RealHalts` au niveau méta :
-pour tout code `e`, `H_from_Fint I e` est équivalent à `RealHalts e`.
+`H_from_Fint` decides exactly `RealHalts` at the meta-level:
+for every code `e`, `H_from_Fint I e` is equivalent to `RealHalts e`.
 -/
 lemma H_from_Fint_iff_RealHalts
     (I : InternalisationWithAC ctx S) (e : Code) :
@@ -685,13 +685,13 @@ lemma H_from_Fint_iff_RealHalts
     exact ⟨h_real, I.correct_on_halting e h_real⟩
 
 /--
-Principe de réflexion local, spécifique au prédicat de halting
-`H_from_Fint ctx S I` construit à partir d'une internalisation `I`.
+Local reflection principle, specific to the halting predicate
+`H_from_Fint ctx S I` constructed from an internalisation `I`.
 
-Si une théorie `T` internalise `S` via `I : InternalisationWithAC ctx S`,
-alors le prédicat méta `H_from_Fint ctx S I : Code → Prop` peut être
-reflété comme un prédicat interne `H_enc : Code → PropT`, correct,
-complet **et total** pour `H_from_Fint`.
+If a theory `T` internalises `S` via `I : InternalisationWithAC ctx S`,
+then the meta-level predicate `H_from_Fint ctx S I : Code → Prop` can be
+reflected as an internal predicate `H_enc : Code → PropT`, correct,
+complete **and total** for `H_from_Fint`.
 -/
 axiom reflect_for_this_H :
   ∀ {Code PropT : Type}
@@ -709,23 +709,23 @@ Main theorem (Level 2): AC operative internalisation impossibility.
 If a theory `T` satisfying the Turing–Gödel hypotheses could internalise
 the Rev–CH–AC system `S` via a kit `I : InternalisationWithAC ctx S`,
 then the induced halting predicate `H_from_Fint ctx S I` could be
-reflected internally, yielding un prédicat interne total/correct/complet
-pour `RealHalts`, contradisant le niveau 1.
+reflected internally, yielding a total/correct/complete internal
+predicate for `RealHalts`, contradicting Level 1.
 -/
 theorem no_AC_operative_internalisation :
     ¬ ∃ _ : InternalisationWithAC ctx S, True := by
   intro ⟨I, _⟩
 
-  -- 1. Réflexion locale pour ce H_from_Fint ctx S I
+  -- 1. Local reflection for this specific H_from_Fint ctx S I
   obtain ⟨H_enc, h_enc_pos, h_enc_neg, h_enc_total⟩ :=
     reflect_for_this_H ctx S I
 
-  -- 2. Obstruction de niveau 1 : aucun prédicat interne total/correct/complet
+  -- 2. Level 1 obstruction: no total/correct/complete internal predicate
   have h_no_candidate : ¬ ∃ C : InternalisationCandidate ctx, True :=
     no_full_internalisation ctx
 
-  -- 3. Construire un tel candidat C à partir de H_enc et de l'équivalence
-  --    méta H_from_Fint ↔ RealHalts
+  -- 3. Build such a candidate C from H_enc and the meta-equivalence
+  --    H_from_Fint ↔ RealHalts
   let C : InternalisationCandidate ctx :=
     { H := H_enc
       , total := by
@@ -733,13 +733,13 @@ theorem no_AC_operative_internalisation :
           exact h_enc_total e
       , correct := by
           intro e hReal
-          -- RealHalts e ⇒ H_from_Fint e via l'équivalence
+          -- RealHalts e ⇒ H_from_Fint e via the equivalence
           have hH : H_from_Fint ctx S I e :=
             (H_from_Fint_iff_RealHalts ctx S I e).2 hReal
           exact h_enc_pos e hH
       , complete := by
           intro e hNotReal
-          -- ¬RealHalts e ⇒ ¬H_from_Fint e via l'équivalence
+          -- ¬RealHalts e ⇒ ¬H_from_Fint e via the equivalence
           have hNotH : ¬ H_from_Fint ctx S I e := by
             intro hH
             have hReal : ctx.RealHalts e :=
@@ -747,7 +747,7 @@ theorem no_AC_operative_internalisation :
             exact hNotReal hReal
           exact h_enc_neg e hNotH }
 
-  -- 4. Contradiction avec le niveau 1
+  -- 4. Contradiction with Level 1
   exact h_no_candidate ⟨C, trivial⟩
 
 end RevCHACSystem
