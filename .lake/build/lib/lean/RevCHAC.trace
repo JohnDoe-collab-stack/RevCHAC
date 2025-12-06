@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["31825c88be8d9594.olean"],
-  "i": "366f03adbefa9c39.ilean",
-  "c": "bc3683d7fb0a53b3.c"},
+ {"o": ["75de0480111a83dc.olean"],
+  "i": "60c4855af0eed4d2.ilean",
+  "c": "cb74b64b79df0e1e.c"},
  "log":
  [{"message":
    ".> LEAN_PATH=C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\Cli\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\batteries\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\Qq\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\aesop\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\proofwidgets\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\LeanSearchClient\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\plausible\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean;C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\build\\lib\\lean c:\\Users\\frederick.loubli.TKS\\.elan\\toolchains\\leanprover--lean4---v4.26.0-rc2\\bin\\lean.exe C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\RevCHAC\\RevCHAC.lean -o C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\build\\lib\\lean\\RevCHAC.olean -i C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\build\\lib\\lean\\RevCHAC.ilean -c C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\build\\ir\\RevCHAC.c --setup C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\.lake\\build\\ir\\RevCHAC.setup.json --json",
@@ -27,7 +27,7 @@
   ["Lean 4.26.0, commit 9d4ad1273f6cea397c3066c2c83062a4410d16bf",
    "c1ab21c0a088cff7"],
   ["C:\\Users\\frederick.loubli.TKS\\OneDrive - t-kartor.com\\Pictures\\WORKSPACELEAN\\RevCHAC\\RevCHAC\\RevCHAC.lean",
-   "2ce9755b4201beb6"],
+   "4395d695cbd1a065"],
   ["options", "00000000000006bb"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "1d97cf411bb143d8"}
+ "depHash": "4f73da37e2b73bdf"}

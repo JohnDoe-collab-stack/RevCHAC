@@ -317,120 +317,6 @@ lemma semantic_iff_verdict
   -- combine semantic and dynamic sides
   exact h_sem.trans h_dyn.symm
 
-/-!
-## Meta-theorem (external to this Lean development)
-
-The following is a classical meta-logical fact (Turing + Gödel),
-not formalised inside Lean here, but conceptually linked to `Halts`.
-
-Let `T` be a recursively axiomatizable, consistent theory extending
-elementary arithmetic (for example PA or ZFC).
-
-Consider a formula `H(e)` of the language of `T` intended to decide
-whether the program with code `e` halts in the *standard* sense.
-
-We say that `H` is a total, correct and complete internal halting
-predicate for `T` if:
-
-* (Totality)
-  For every program code `e`, the theory `T` proves either `H(e)` or `¬ H(e)`.
-
-* (Correctness)
-  For every `e`, if the program `e` really halts (in the standard model of ℕ),
-  then `T ⊢ H(e)`.
-
-* (Completeness)
-  For every `e`, if the program `e` really does not halt, then `T ⊢ ¬ H(e)`.
-
-**Meta-theorem (Turing + Gödel).**
-
-No such formula `H(e)` can exist if `T` is consistent.
-
-Equivalently:
-
-> There is no way, inside a recursive consistent theory like ZFC,
-> to internalise a single predicate `H(e)` that decides correctly
-> and completely the real halting behaviour of all programs.
-
-In particular, ZFC can *encode* traces and halting predicates,
-but it cannot absorb the full external halting dynamic as a single
-total, correct, complete internal object `H`. Any such attempt
-would yield a decision procedure for the halting problem, which
-is impossible by Turing's theorem.
--/
-
-section MetaTheorem
-
-variable (Code : Type)
-variable (PropT : Type) -- Propositions of the theory T
-
-/--
-Context for the Turing-Gödel Meta-Theorem.
-We assume a theory `T` (represented by `Provable`) and a notion of `RealHalts`.
--/
-structure TuringGodelContext where
-  -- The "Real World"
-  RealHalts : Code → Prop
-
-  -- The "Theory World"
-  Provable : PropT → Prop
-  FalseT   : PropT
-  Not      : PropT → PropT
-
-  -- Consistency: T never proves False
-  consistent : ¬ Provable FalseT
-
-  -- Logic: T knows about negation (minimal requirement for the contradiction)
-  -- If T ⊢ P and T ⊢ ¬P, then T ⊢ False
-  absurd : ∀ {p}, Provable p → Provable (Not p) → Provable FalseT
-
-  -- Diagonalization (The "Turing Machine" part):
-  -- For any formula H(x), there exists a program `e` that halts
-  -- iff T proves `¬ H(e)`.
-  -- (Program `e`: "Search for a proof of ¬H(e). If found, halt.")
-  diagonal_program :
-    ∀ (H : Code → PropT), ∃ e : Code, RealHalts e ↔ Provable (Not (H e))
-
-/--
-The Impossibility Theorem.
-There is no internal formula `H` that is Total, Correct, and Complete.
--/
-theorem no_internal_halting_predicate
-    (ctx : TuringGodelContext Code PropT) :
-    ¬ ∃ (H : Code → PropT),
-      -- 1. Totality: T decides H(e) for every e
-      (∀ e, ctx.Provable (H e) ∨ ctx.Provable (ctx.Not (H e))) ∧
-      -- 2. Correctness: If e halts, T proves H(e)
-      (∀ e, ctx.RealHalts e → ctx.Provable (H e)) ∧
-      -- 3. Completeness: If e doesn't halt, T proves ¬H(e)
-      (∀ e, ¬ ctx.RealHalts e → ctx.Provable (ctx.Not (H e))) := by
-
-  intro h_exists
-  rcases h_exists with ⟨H, total, correct, complete⟩
-
-  -- Use the diagonal lemma to get a "paradoxical" code e
-  obtain ⟨e, he⟩ := ctx.diagonal_program H
-
-  -- Case analysis on whether e really halts
-  by_cases h_real : ctx.RealHalts e
-  · -- Case 1: e really halts
-    -- By Correctness, T ⊢ H(e)
-    have h_prov_H : ctx.Provable (H e) := correct e h_real
-    -- By Diagonal property, T ⊢ ¬H(e) (since e halts)
-    have h_prov_not_H : ctx.Provable (ctx.Not (H e)) := he.mp h_real
-    -- Contradiction with consistency
-    exact ctx.consistent (ctx.absurd h_prov_H h_prov_not_H)
-
-  · -- Case 2: e does not halt
-    -- By Completeness, T ⊢ ¬H(e)
-    have h_prov_not_H : ctx.Provable (ctx.Not (H e)) := complete e h_real
-    -- By Diagonal property, if T ⊢ ¬H(e), then e must halt
-    have h_halt : ctx.RealHalts e := he.mpr h_prov_not_H
-    -- Contradiction with hypothesis that e does not halt
-    exact h_real h_halt
-
-end MetaTheorem
-
 
 /-
   REV–CH ISOMORPHISM LAYER
@@ -784,24 +670,6 @@ This directly asserts halting, making it total/correct/complete.
 def H_from_Fint (I : InternalisationWithAC ctx S) (e : Code) : Prop :=
   ∃ h : ctx.RealHalts e, I.Decode (I.F_int e) = AC_dyn ctx S e h
 
-/-- H is correct: if e halts, then H(e) holds -/
-lemma H_from_Fint_correct
-    (I : InternalisationWithAC ctx S) (e : Code) :
-    ctx.RealHalts e → H_from_Fint ctx S I e := by
-  intro h_real
-  unfold H_from_Fint
-  exact ⟨h_real, I.correct_on_halting e h_real⟩
-
-/-- H is complete: if e doesn't halt, then ¬H(e) -/
-lemma H_from_Fint_complete
-    (I : InternalisationWithAC ctx S) (e : Code) :
-    ¬ ctx.RealHalts e → ¬ H_from_Fint ctx S I e := by
-  intro h_not_real
-  unfold H_from_Fint
-  intro ⟨h_real, _⟩
-  -- h_real : RealHalts(e) but we have ¬RealHalts(e)
-  exact h_not_real h_real
-
 /--
 `H_from_Fint` décide exactement `RealHalts` au niveau méta :
 pour tout code `e`, `H_from_Fint I e` est équivalent à `RealHalts e`.
@@ -817,78 +685,69 @@ lemma H_from_Fint_iff_RealHalts
     exact ⟨h_real, I.correct_on_halting e h_real⟩
 
 /--
-Axiom of reflection for `RealHalts`.
+Principe de réflexion local, spécifique au prédicat de halting
+`H_from_Fint ctx S I` construit à partir d'une internalisation `I`.
 
-If a meta-level predicate `H : Code → Prop` is extensionally equal to
-`ctx.RealHalts`, then it can be reflected as an internal predicate
-`H_enc : Code → PropT` such that:
-
-* whenever a code `e` really halts, T proves `H_enc e`,
-* whenever a code `e` really does not halt, T proves `¬ H_enc e`.
-
-Conceptually, this isolates the exact point where a full
-internalisation of the real halting profile is being postulated:
-assuming such a reflection principle for `RealHalts` is what turns
-a meta-level description of halting into a candidate perfect internal
-halting predicate, and therefore exposes it to the Turing–Gödel
-impossibility theorem.
+Si une théorie `T` internalise `S` via `I : InternalisationWithAC ctx S`,
+alors le prédicat méta `H_from_Fint ctx S I : Code → Prop` peut être
+reflété comme un prédicat interne `H_enc : Code → PropT`, correct,
+complet **et total** pour `H_from_Fint`.
 -/
-axiom reflect_RealHalts :
+axiom reflect_for_this_H :
   ∀ {Code PropT : Type}
     (ctx : TuringGodelContext' Code PropT)
-    (H : Code → Prop),
-    (∀ e, H e ↔ ctx.RealHalts e) →
+    (S   : RevCHACSystem ctx)
+    (I   : InternalisationWithAC ctx S),
     ∃ H_enc : Code → PropT,
-      (∀ e, ctx.RealHalts e → ctx.Provable (H_enc e)) ∧
-      (∀ e, ¬ ctx.RealHalts e → ctx.Provable (ctx.Not (H_enc e)))
+      (∀ e, H_from_Fint ctx S I e → ctx.Provable (H_enc e)) ∧
+      (∀ e, ¬ H_from_Fint ctx S I e → ctx.Provable (ctx.Not (H_enc e))) ∧
+      (∀ e, ctx.Provable (H_enc e) ∨ ctx.Provable (ctx.Not (H_enc e)))
 
 /--
 Main theorem (Level 2): AC operative internalisation impossibility.
 
-Level 2 (Operative AC):
-
-There does not exist a pair `(F_int, Decode)` internal to `T` that is:
-
-* total on all codes `e : Code`,
-* and perfectly aligned, on each `e` that really halts,
-  with the dynamic AC `AC_dyn` constructed via `Rev` + `CH_local`.
-
-Otherwise, we could reconstruct an internal predicate that is
-total/correct/complete for `RealHalts`, which contradicts
-`no_full_internalisation`.
-
-This theorem shows that ZFC cannot internalize the *specific operative AC*
-aligned with the Rev-CH-AC dynamic without violating Turing–Gödel.
+If a theory `T` satisfying the Turing–Gödel hypotheses could internalise
+the Rev–CH–AC system `S` via a kit `I : InternalisationWithAC ctx S`,
+then the induced halting predicate `H_from_Fint ctx S I` could be
+reflected internally, yielding un prédicat interne total/correct/complet
+pour `RealHalts`, contradisant le niveau 1.
 -/
 theorem no_AC_operative_internalisation :
     ¬ ∃ _ : InternalisationWithAC ctx S, True := by
   intro ⟨I, _⟩
 
-  -- 1. H_from_Fint decides exactly RealHalts (meta-level)
-  have h_decides : ∀ e, H_from_Fint ctx S I e ↔ ctx.RealHalts e :=
-    H_from_Fint_iff_RealHalts ctx S I
+  -- 1. Réflexion locale pour ce H_from_Fint ctx S I
+  obtain ⟨H_enc, h_enc_pos, h_enc_neg, h_enc_total⟩ :=
+    reflect_for_this_H ctx S I
 
-  -- 2. Reflection axiom: encode this meta-predicate as internal predicate H_enc
-  obtain ⟨H_enc, h_enc_correct, h_enc_complete⟩ :=
-    reflect_RealHalts ctx (H_from_Fint ctx S I) h_decides
-
-  -- 3. Construct an InternalisationCandidate from H_enc
+  -- 2. Obstruction de niveau 1 : aucun prédicat interne total/correct/complet
   have h_no_candidate : ¬ ∃ C : InternalisationCandidate ctx, True :=
     no_full_internalisation ctx
 
+  -- 3. Construire un tel candidat C à partir de H_enc et de l'équivalence
+  --    méta H_from_Fint ↔ RealHalts
   let C : InternalisationCandidate ctx :=
     { H := H_enc
-      -- Totality: by excluded middle on RealHalts(e), connected to H_enc
-      , total := fun e => by
-          by_cases h : ctx.RealHalts e
-          · left
-            exact h_enc_correct e h
-          · right
-            exact h_enc_complete e h
-      , correct := h_enc_correct
-      , complete := h_enc_complete }
+      , total := by
+          intro e
+          exact h_enc_total e
+      , correct := by
+          intro e hReal
+          -- RealHalts e ⇒ H_from_Fint e via l'équivalence
+          have hH : H_from_Fint ctx S I e :=
+            (H_from_Fint_iff_RealHalts ctx S I e).2 hReal
+          exact h_enc_pos e hH
+      , complete := by
+          intro e hNotReal
+          -- ¬RealHalts e ⇒ ¬H_from_Fint e via l'équivalence
+          have hNotH : ¬ H_from_Fint ctx S I e := by
+            intro hH
+            have hReal : ctx.RealHalts e :=
+              (H_from_Fint_iff_RealHalts ctx S I e).1 hH
+            exact hNotReal hReal
+          exact h_enc_neg e hNotH }
 
-  -- 4. Contradiction with level 1
+  -- 4. Contradiction avec le niveau 1
   exact h_no_candidate ⟨C, trivial⟩
 
 end RevCHACSystem
