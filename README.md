@@ -1,20 +1,22 @@
 # RevCHAC
 
-> **Lean Version:** `leanprover/lean4:v4.26.0-rc2`  
+> **Lean Version:** `leanprover/lean4:v4.26.0-rc2`
 > **Main File:** `RevCHAC/RevCHAC.lean`
 
 This repository currently consists of a single Lean file implementing the following architecture:
 
-- a purely semantic Galois layer over a satisfaction relation,
-- a dynamic halting layer built from traces and a “reverse halting” operator `Rev`,
-- a local reading `LR` that realises semantic consequence as halting of traces,
-- an abstract Turing–Gödel context encoding the standard diagonal obstruction,
-- a `RevCHACSystem` that aligns real halting, a Rev-based halting profile, a CH-local profile, and a dynamic choice operator,
-- two levels of “non-internalisation” meta-theorems: one for halting, one for the specific operative AC built from this system.
+* a purely semantic Galois layer over a satisfaction relation,
+* a dynamic halting layer built from traces and a “reverse halting” operator `Rev`,
+* a local reading `LR` that realises semantic consequence as halting of traces,
+* an abstract Turing–Gödel context encoding the standard diagonal obstruction,
+* a `RevCHACSystem` that aligns real halting, a Rev-based halting profile, a CH-local profile, and a dynamic choice operator,
+* two levels of “non-internalisation” meta-theorems: one for halting, one for the specific operative AC built from this system.
 
 The result is a precise Lean formalisation of the slogan:
 
 > **There is a concrete dynamic halting/choice structure, definable from ℕ and basic semantics, that no recursive consistent theory of ZFC-strength can fully internalise as a single total, correct and complete predicate.**
+
+Level 2 is stated in a Turing–Gödel context equipped with a *local* reflection principle that applies specifically to the meta-level halting predicate induced by an attempted internalisation of this dynamic AC.
 
 ---
 
@@ -22,12 +24,13 @@ The result is a precise Lean formalisation of the slogan:
 
 The file starts by fixing:
 
-- a type `Sentence`,
-- a type `Model`,
-- a satisfaction relation
+* a type `Sentence`,
+* a type `Model`,
+* a satisfaction relation
+
   ```lean
   Sat : Model → Sentence → Prop
-```
+  ```
 
 From this, it defines the usual Galois connection between sets of sentences and classes of models:
 
@@ -140,6 +143,7 @@ Given `LR`, the file defines:
   def Prov (LR : LocalReading Context Sentence) (Γ : Context) (φ : Sentence) : Prop :=
     ∃ n : ℕ, LR Γ φ n
   ```
+
 * the **robust verdict** induced by `Rev0`:
 
   ```lean
@@ -190,38 +194,9 @@ This cleanly separates:
 
 The next part formalises an abstract Turing–Gödel setting in Lean. This is purely meta-theoretic: the structures and theorems are stated over abstract types and not instantiated inside the file.
 
-### 4.1. `TuringGodelContext`
+### 4.1. `TuringGodelContext'`
 
-In the inner `MetaTheorem` section, the file defines:
-
-```lean
-structure TuringGodelContext where
-  RealHalts : Code → Prop
-  Provable  : PropT → Prop
-  FalseT    : PropT
-  Not       : PropT → PropT
-  consistent : ¬ Provable FalseT
-  absurd     : ∀ {p}, Provable p → Provable (Not p) → Provable FalseT
-  diagonal_program :
-    ∀ (H : Code → PropT), ∃ e : Code, RealHalts e ↔ Provable (Not (H e))
-```
-
-Using this, it proves the classical impossibility of a *total, correct and complete* internal halting predicate:
-
-```lean
-theorem no_internal_halting_predicate
-  (ctx : TuringGodelContext Code PropT) :
-  ¬ ∃ (H : Code → PropT),
-      (∀ e, ctx.Provable (H e) ∨ ctx.Provable (ctx.Not (H e))) ∧
-      (∀ e, ctx.RealHalts e → ctx.Provable (H e)) ∧
-      (∀ e, ¬ ctx.RealHalts e → ctx.Provable (ctx.Not (H e)))
-```
-
-The proof is the standard diagonal argument: apply `diagonal_program` to `H`, then split on `RealHalts e` and contradict consistency in both cases.
-
-### 4.2. `TuringGodelContext'` and `InternalHaltingPredicate`
-
-For the later layers, a slightly re-packaged context is introduced:
+The file defines:
 
 ```lean
 structure TuringGodelContext' (Code PropT : Type) where
@@ -235,7 +210,20 @@ structure TuringGodelContext' (Code PropT : Type) where
     ∀ (H : Code → PropT), ∃ e : Code, RealHalts e ↔ Provable (Not (H e))
 ```
 
-An internal halting predicate is then:
+Using this, it proves the classical impossibility of a *total, correct and complete* internal halting predicate:
+
+```lean
+theorem no_internal_halting_predicate'
+  {Code PropT : Type}
+  (ctx : TuringGodelContext' Code PropT) :
+  ¬ ∃ _ : InternalHaltingPredicate ctx, True
+```
+
+The proof is the standard diagonal argument: apply `diagonal_program` to `H`, then split on `RealHalts e` and contradict consistency in both cases.
+
+### 4.2. `InternalHaltingPredicate`
+
+An internal halting predicate is:
 
 ```lean
 structure InternalHaltingPredicate (ctx : TuringGodelContext' Code PropT) where
@@ -253,7 +241,7 @@ theorem no_internal_halting_predicate'
   ¬ ∃ _ : InternalHaltingPredicate ctx, True
 ```
 
-is the same diagonal argument, now packaged via `InternalHaltingPredicate`. This will be the main input for Level 1 of the non-internalisation result.
+is the diagonal argument packaged via `InternalHaltingPredicate`. This is the main input for Level 1 of the non-internalisation result.
 
 ---
 
@@ -399,24 +387,44 @@ lemma H_from_Fint_iff_RealHalts
     H_from_Fint ctx S I e ↔ ctx.RealHalts e
 ```
 
-So `H_from_Fint` decides exactly the real halting predicate at the meta-level.
+So `H_from_Fint` decides exactly the real halting predicate at the meta-level, *assuming* we have an internalisation kit `I`.
 
-To connect this with the internal theory `T`, an explicit reflection axiom is introduced:
+To connect this with the internal theory `T`, the file introduces an explicit **local reflection axiom**:
 
 ```lean
-axiom reflect_RealHalts :
+axiom reflect_for_this_H :
   ∀ {Code PropT : Type}
     (ctx : TuringGodelContext' Code PropT)
-    (H : Code → Prop),
-    (∀ e, H e ↔ ctx.RealHalts e) →
+    (S   : RevCHACSystem ctx)
+    (I   : InternalisationWithAC ctx S),
     ∃ H_enc : Code → PropT,
-      (∀ e, ctx.RealHalts e → ctx.Provable (H_enc e)) ∧
-      (∀ e, ¬ ctx.RealHalts e → ctx.Provable (ctx.Not (H_enc e)))
+      (∀ e, H_from_Fint ctx S I e → ctx.Provable (H_enc e)) ∧
+      (∀ e, ¬ H_from_Fint ctx S I e → ctx.Provable (ctx.Not (H_enc e))) ∧
+      (∀ e, ctx.Provable (H_enc e) ∨ ctx.Provable (ctx.Not (H_enc e)))
 ```
 
-This isolates the exact point where a full internalisation of the real halting profile is being postulated: if such a reflection principle holds for `RealHalts`, then any meta-level description of halting can be turned into a perfect internal predicate.
+This axiom is **local** in two senses:
 
-Applying `reflect_RealHalts` to `H := H_from_Fint ctx S I` yields an internal `H_enc`. From this one builds an `InternalisationCandidate ctx`, contradicting `no_full_internalisation`.
+* it is postulated only in the presence of a chosen `ctx`, `S`, and `I`,
+* it reflects precisely the predicate `H_from_Fint ctx S I` into the theory `T`, yielding:
+
+  * correctness: if `H_from_Fint e` holds meta-theoretically, then `T ⊢ H_enc(e)`,
+  * completeness: if `¬ H_from_Fint e` holds meta-theoretically, then `T ⊢ ¬H_enc(e)`,
+  * totality: for each `e`, `T` proves either `H_enc(e)` or `¬H_enc(e)`.
+
+Using `reflect_for_this_H`, the proof of the Level 2 theorem proceeds as follows:
+
+1. Assume an internalisation kit `I : InternalisationWithAC ctx S`.
+
+2. By `reflect_for_this_H`, obtain `H_enc : Code → PropT` with the three properties above.
+
+3. Combine this with `H_from_Fint_iff_RealHalts` to build an `InternalisationCandidate ctx` with:
+
+   * `H := H_enc`,
+   * totality from the third conjunct of `reflect_for_this_H`,
+   * correctness and completeness via the first two conjuncts plus the equivalence with `RealHalts`.
+
+4. This contradicts `no_full_internalisation ctx`.
 
 The final theorem is:
 
@@ -427,17 +435,17 @@ theorem no_AC_operative_internalisation :
 
 Informal reading:
 
-> There is no way, in a recursive consistent theory of ZFC-strength, to internalise a total choice function `F_int : Code → W_int` whose behaviour on halting codes exactly matches the dynamic AC `AC_dyn` built from the Rev–CH–AC structure.
-> Otherwise, via reflection, one would reconstruct an internal predicate that is total, correct and complete for `RealHalts`, contradicting Turing–Gödel.
+> There is no way, in a recursive consistent theory of ZFC-strength, to internalise a total choice function `F_int : Code → W_int` whose behaviour on halting codes exactly matches the dynamic AC `AC_dyn` built from the Rev–CH–AC structure, **provided** we also assume the local reflection principle `reflect_for_this_H` for the resulting meta-level halting predicate.
+> Otherwise, we would obtain an internal predicate that is total, correct and complete for `RealHalts`, contradicting Turing–Gödel.
 
 ---
 
 ## 7. Logical status of the components
 
-* The **BasicSemantics** layer (`ModE`/`ThE`/`CloE`) and the **Rev/Trace** layer are fully constructive modulo standard `Mathlib` imports (`Set`, `Nat`). No set theory
-* The **Turing–Gödel contexts** and the theorems `no_internal_halting_predicate` / `no_internal_halting_predicate'` are formalised entirely as Lean theorems over abstract structures; they encode the classical diagonal argument.
+* The **BasicSemantics** layer (`ModE`/`ThE`/`CloE`) and the **Rev/Trace** layer are fully constructive modulo standard `Mathlib` imports (`Set`, `Nat`).
+* The **Turing–Gödel contexts** and the theorem `no_internal_halting_predicate'` are formalised entirely as Lean theorems over abstract structures; they encode the classical diagonal argument.
 * The **RevCHACSystem** and `AC_dyn` are definitional: they package assumptions about isomorphisms between `RealHalts`, Rev-halting, CH-local, and a dynamic choice function.
-* The Level 2 theorem `no_AC_operative_internalisation` uses an explicit **reflection axiom** `reflect_RealHalts` to link meta-level predicates back into `PropT`. This makes explicit the extra meta-logical assumption needed to talk about internalisation of the specific operative AC.
+* The Level 2 theorem `no_AC_operative_internalisation` uses an explicit **local reflection axiom** `reflect_for_this_H` to link the specific meta-level halting predicate `H_from_Fint ctx S I` back into the internal theory `T`. This makes explicit the extra meta-logical assumption needed to talk about internalisation of the *specific* operative AC determined by a given `RevCHACSystem` and internalisation kit.
 
 This separation keeps the formal core clean while showing exactly where meta-level reasoning is imported into the internal theory.
 
@@ -445,22 +453,22 @@ This separation keeps the formal core clean while showing exactly where meta-lev
 
 ## 8. How to use / extend
 
-* The current file is self-contained modulo `Mathlib` and the explicit meta-axiom `reflect_RealHalts`.
+* The current file is self-contained modulo `Mathlib` and the explicit meta-axiom `reflect_for_this_H`.
 * To adapt the framework to a concrete theory `T` (e.g. PA or ZFC), one would:
 
   * choose concrete types `Code` and `PropT`,
   * interpret `Provable`, `FalseT`, `Not`, and `RealHalts`,
   * check that the `TuringGodelContext'` hypotheses are met (via standard arithmetisation),
-  * instantiate a concrete `RevCHACSystem` capturing the intended dynamic CH-profile and choice operator.
+  * instantiate a concrete `RevCHACSystem` capturing the intended dynamic CH-profile and choice operator,
+  * decide in which form a reflection principle analogous to `reflect_for_this_H` is acceptable.
 
 Possible extensions:
 
 * constructing explicit local readings `LR` from proof systems and establishing a `DynamicBridge` in concrete situations,
 * connecting the CH-local profile with more familiar formulations of CH or variants,
-* exploring variants of `reflect_RealHalts` with weaker or different reflection principles.
+* exploring variants of the local reflection axiom (weaker, stronger, or differently scoped).
 
 At this stage, the file provides a complete, formal skeleton of the two-level meta-theorem:
 
 1. No perfect internal halting predicate for `RealHalts`.
-2. Consequently, no perfect internalisation of the **specific operative AC** induced by the Rev–CH–AC dynamic architecture.
-
+2. Consequently, under the local reflection assumption `reflect_for_this_H`, no perfect internalisation of the **specific operative AC** induced by the Rev–CH–AC dynamic architecture.
