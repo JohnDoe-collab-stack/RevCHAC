@@ -434,7 +434,7 @@ Informal reading:
 
 ## 7. Logical status of the components
 
-* The **BasicSemantics** layer (`ModE`/`ThE`/`CloE`) and the **Rev/Trace** layer are fully constructive modulo classical choice and standard `Mathlib` imports (`Set`, `Nat`).
+* The **BasicSemantics** layer (`ModE`/`ThE`/`CloE`) and the **Rev/Trace** layer are fully constructive modulo standard `Mathlib` imports (`Set`, `Nat`). No set theory
 * The **Turing–Gödel contexts** and the theorems `no_internal_halting_predicate` / `no_internal_halting_predicate'` are formalised entirely as Lean theorems over abstract structures; they encode the classical diagonal argument.
 * The **RevCHACSystem** and `AC_dyn` are definitional: they package assumptions about isomorphisms between `RealHalts`, Rev-halting, CH-local, and a dynamic choice function.
 * The Level 2 theorem `no_AC_operative_internalisation` uses an explicit **reflection axiom** `reflect_RealHalts` to link meta-level predicates back into `PropT`. This makes explicit the extra meta-logical assumption needed to talk about internalisation of the specific operative AC.
