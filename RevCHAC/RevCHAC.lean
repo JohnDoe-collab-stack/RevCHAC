@@ -138,9 +138,6 @@ lemma exists_up_iff (T : Trace) :
 def Halts (T : Trace) : Prop :=
   ∃ n : ℕ, T n
 
-lemma Halts_iff_exists (T : Trace) :
-  Halts T ↔ ∃ n, T n := Iff.rfl
-
 /--
 A reverse-halting kit:
 `Proj X` is the stabilized projection of a family `X : ℕ → Prop`.
