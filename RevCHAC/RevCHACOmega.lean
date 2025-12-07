@@ -11,20 +11,25 @@ on a concrete **two-counter Minsky machine**.
 1. **DR0/DR1 are derived** from the Rev framework (not axiomatized)
 2. **Halting monotonicity** is proven: once halted, stays halted
 3. **Omega/Cut/Bit** programs encode the halting probability
-4. **AC_dyn** is the dynamic choice operator that cannot be internalized
-5. **Impossibility theorems** are instantiated on this concrete system
+4. **Universal machine** with encode/decode demonstrates Turing-completeness
+5. **AC_dyn** is the dynamic choice operator that cannot be internalized
+6. **Impossibility theorems** are instantiated on this concrete system
 
-## Architecture
+## Sections
 
-```
-Counter Machine → progTrace → Rev0/Halts → DR0/DR1
-                                    ↓
-                            OmegaBit/Cut/Bit
-                                    ↓
-                                 AC_dyn
-                                    ↓
-                          RevCHACSystem + Impossibility
-```
+1. Counter Machine — Minsky 2-counter model
+2. Connection to Rev — progTrace, HaltsProg, RHKit
+3. Delta — deltaScaled, countHalted, allHalted
+4. DR0/DR1 — derived from Rev dynamics
+5. Halting Persistence — step_none, run_stable, mono
+6. Example Programs — progHalt, progLoop
+7. Loop Never Halts — proven, not axiomatized
+8. Omega — OmegaPartialScaled, OmegaBit, program enumeration
+8b. Universal Machine — decode/encode, universalRun/Halts
+9. Cut and Bit — programs encoding Ω properties
+10. AC_dyn — dynamic choice operator
+11. RevCHACSystem — full assembly
+12. Impossibility — no internal H, no AC internalisation
 
 ## The Syntactic/Semantic Separation
 
@@ -566,25 +571,30 @@ theorem concrete_no_AC_internalisation :
 
 /-! ## Summary
 
-### Axioms (Only 2 — for the oracle)
+### Axioms (Only 2 — for the halting oracle)
 - `haltingOracle_correct`: Oracle returns valid halting step
 - `haltingOracle_minimal`: Oracle returns first halting step
 
-### Proven Theorems (Previously Axioms)
+### Proven Theorems
 - `progLoop_never_halts`: The loop program never halts
 - `cut_delta_nonzero`: Cut(0) has positive delta
 - `bit_halts_iff`: Bit programs halt iff the bit matches
+- `countHalted_progHalt`: countHalted N progHalt = N
+- `countHalted_progLoop`: countHalted N progLoop = 0
+- `HaltsProg_eq_Rev0`: Link to Rev0 via concrete RHKit
 
 ### Key Results
 - `DR0`, `DR1`: Derived from Rev dynamics
 - `haltsWithinBool_mono`: Halting monotonicity
+- `OmegaPartialScaled`: True Omega partial sum (scaled integer)
+- `universalRun`, `universalHalts`: Universal machine
 - `concrete_no_internal_halting`: No total+correct+complete H exists
 - `concrete_no_AC_internalisation`: AC_dyn cannot be internalized
 
 ### The Separation
-- **Computable**: Programs, traces, delta, OmegaBit, Cut, Bit
+- **Computable**: Programs, traces, delta, OmegaBit, Cut, Bit, encode/decode
 - **Non-computable**: HaltsProg (∃), haltingOracle
-- **AC_dyn**: Crosses the syntactic/semantic boundary
+- **AC_dyn**: Crosses the syntactic/semantic boundary — cannot be internalized
 -/
 
 end RevCHACOmega
