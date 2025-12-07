@@ -222,6 +222,50 @@ lemma Rev0_eq_Halts (DK : DetectsMonotone K) :
   intro T
   exact Rev0_iff_Halts K DK T
 
+/--
+Rev0 over a family of traces: the verdict is pointwise, independent of family size.
+For any indexing type I (finite or infinite), we get Rev0 ↔ Halts for each trace.
+-/
+lemma Rev0_eq_Halts_family (DK : DetectsMonotone K)
+    {I : Type*} (T : I → Trace) :
+    ∀ i : I, Rev0 K (T i) ↔ Halts (T i) := by
+  intro i
+  exact Rev0_eq_Halts K DK (T i)
+
+end  -- section K
+
+/-!
+### Global Uniqueness of Rev
+
+Two different kits K₁ and K₂ (both satisfying DetectsMonotone) give the same
+verdict on every trace. This shows Rev is robust: implementation details don't
+matter as long as the kit property holds.
+-/
+
+/-- Two DetectsMonotone kits agree on all traces. -/
+theorem Rev_global_uniqueness
+    (K₁ K₂ : RHKit)
+    (DK₁ : DetectsMonotone K₁)
+    (DK₂ : DetectsMonotone K₂) :
+    ∀ T : Trace, Rev0 K₁ T ↔ Rev0 K₂ T := by
+  intro T
+  have h₁ : Rev0 K₁ T ↔ Halts T := Rev0_iff_Halts K₁ DK₁ T
+  have h₂ : Rev0 K₂ T ↔ Halts T := Rev0_iff_Halts K₂ DK₂ T
+  exact h₁.trans h₂.symm
+
+/-- Family version: two kits agree on every trace in any family. -/
+theorem Rev_global_uniqueness_family
+    (K₁ K₂ : RHKit)
+    (DK₁ : DetectsMonotone K₁)
+    (DK₂ : DetectsMonotone K₂)
+    {I : Type*} (T : I → Trace) :
+    ∀ i : I, Rev0 K₁ (T i) ↔ Rev0 K₂ (T i) := by
+  intro i
+  exact Rev_global_uniqueness K₁ K₂ DK₁ DK₂ (T i)
+
+section
+variable (K : RHKit)
+
 /-!
   Local reading, provability and verdicts.
 -/
