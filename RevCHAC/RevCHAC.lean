@@ -23,7 +23,11 @@ layer alone does not specify.
 
 At the meta-level, this canonical dynamic can be organised into a
 single concrete Rev–CH–AC system with an associated dynamic choice
-operator `AC_dyn` on halting codes.
+operator `AC_dyn` on halting codes. Classical Gödel/Turing results
+only forbid perfect internal predicates for `RealHalts`; here the
+genuinely new object is the **term-level** dynamic choice operator
+`AC_dyn`, and Level 2 is precisely a non-internalisation theorem
+for this specific operator.
 
 Level 2 of the file is entirely meta-theoretic. In a Turing–Gödel
 context, and assuming a *local* reflection principle for the
