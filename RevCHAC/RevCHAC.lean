@@ -25,12 +25,17 @@ At the meta-level, this canonical dynamic can be organised into a
 single concrete Rev–CH–AC system with an associated dynamic choice
 operator `AC_dyn` on halting codes.
 
-Level 2 of the file is entirely meta-theoretic: in a Turing–Gödel
-context equipped with a reflection principle for `RealHalts`, it
-shows that no recursive consistent theory of ZFC strength can
+Level 2 of the file is entirely meta-theoretic. In a Turing–Gödel
+context, and assuming a *local* reflection principle for the
+meta-level halting predicate `H_from_Fint` attached to any
+hypothetical internalisation of this Rev–CH–AC system (which is
+then equivalent to `RealHalts` via `H_from_Fint_iff_RealHalts`),
+it shows that no recursive consistent theory of ZFC strength can
 internalise this specific operative AC as a single total internal
 mechanism (predicate/function) that is correct and complete for
-the real halting profile.
+the real halting profile. Formally, the non-internalisation
+statement is conditional on the axiom `reflect_for_this_H` stated
+in §2.3 (Level 2: AC Operative Internalisation Impossibility).
 -/
 
 universe u v
@@ -685,10 +690,20 @@ lemma H_from_Fint_iff_RealHalts
 Local reflection principle, specific to the halting predicate
 `H_from_Fint ctx S I` constructed from an internalisation `I`.
 
-If a theory `T` internalises `S` via `I : InternalisationWithAC ctx S`,
-then the meta-level predicate `H_from_Fint ctx S I : Code → Prop` can be
-reflected as an internal predicate `H_enc : Code → PropT`, correct,
-complete **and total** for `H_from_Fint`.
+Formally, for any Turing–Gödel context `ctx`, any Rev–CH–AC system `S`
+over `ctx`, and any hypothetical internalisation
+`I : InternalisationWithAC ctx S`, there exists an internal predicate
+`H_enc : Code → PropT` such that:
+
+* whenever `H_from_Fint ctx S I e` holds at the meta-level,
+  the theory proves `H_enc e`;
+* whenever `H_from_Fint ctx S I e` fails at the meta-level,
+  the theory proves `Not (H_enc e)`;
+* and for every `e`, the theory proves either `H_enc e` or `Not (H_enc e)`.
+
+In particular, given `I`, this makes `H_enc` a total, correct and complete
+internal encoding of the meta-level predicate `H_from_Fint ctx S I`
+(which, by `H_from_Fint_iff_RealHalts`, is equivalent to `RealHalts`).
 -/
 axiom reflect_for_this_H :
   ∀ {Code PropT : Type}
