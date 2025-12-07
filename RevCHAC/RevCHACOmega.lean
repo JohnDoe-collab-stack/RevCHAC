@@ -56,23 +56,28 @@ structure MachineState where
   c1 : ℕ
 deriving DecidableEq, Repr
 
+/-- Initial machine state: pc=0, both counters=0. -/
 def initialState : MachineState := ⟨0, 0, 0⟩
 
+/-- Get the value of a counter. -/
 def getCounter (s : MachineState) : Counter → ℕ
   | .c0 => s.c0
   | .c1 => s.c1
 
+/-- Set a counter to a new value. -/
 def setCounter (s : MachineState) (c : Counter) (v : ℕ) : MachineState :=
   match c with
   | .c0 => { s with c0 := v }
   | .c1 => { s with c1 := v }
 
+/-- Get instruction at index idx (None if out of bounds). -/
 def getInstr (prog : Program) (idx : ℕ) : Option Instr :=
   match prog, idx with
   | [], _ => none
   | x :: _, 0 => some x
   | _ :: xs, n + 1 => getInstr xs n
 
+/-- Execute one step of the machine. Returns None if halted or out of bounds. -/
 def step (prog : Program) (s : MachineState) : Option MachineState :=
   match getInstr prog s.pc with
   | none => none
@@ -86,11 +91,13 @@ def step (prog : Program) (s : MachineState) : Option MachineState :=
       if v > 0 then some { (setCounter s c (v - 1)) with pc := s.pc + 1 }
       else some { s with pc := addr }
 
+/-- Check if the machine is at a halt instruction. -/
 def isHalted (prog : Program) (s : MachineState) : Bool :=
   match getInstr prog s.pc with
   | some Instr.halt => true
   | _ => false
 
+/-- Run the machine for n steps, returning the final state. -/
 def run (prog : Program) : ℕ → MachineState
   | 0 => initialState
   | n + 1 => match step prog (run prog n) with
