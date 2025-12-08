@@ -569,6 +569,82 @@ theorem bit_halts_iff (n : ℕ) (a : Bool) :
     rw [this] at hk
     simp at hk
 
+/-! ## 9b. Dissociation Theorems: Cut/Bit Orthogonality
+
+The Cut and Bit program families exhibit a fundamental **dissociation**:
+
+1. **Cut is syntactic**: `HaltsProg (Cut q)` depends ONLY on the parameter `q`,
+   not on any semantic property of Omega.
+
+2. **Bit is semantic**: `HaltsProg (Bit n a)` depends ONLY on `OmegaBit n`,
+   which is a semantic property determined by the halting oracle.
+
+3. **Orthogonality**: The Cut parameter `q` and the Omega bits are independent.
+   Changing `q` does not affect `OmegaBit n`, and vice versa.
+
+This dissociation is the formal basis for the separation of CH (structural)
+and AC (semantic) in the Rev-CH-AC framework.
+-/
+
+/-- **Dissociation (Cut)**: Cut halting depends ONLY on q, not on Omega.
+    This is purely syntactic — no oracle needed. -/
+theorem cut_halts_iff (q : ℕ) :
+    HaltsProg (Cut q) ↔ q > 0 := by
+  unfold Cut
+  split_ifs with h
+  · -- q > 0 → halt
+    constructor
+    · intro _; exact h
+    · intro _
+      unfold HaltsProg Halts progTrace haltsWithinBool isHalted
+      use 0
+      unfold run getInstr
+      rfl
+  · -- q = 0 → loop forever
+    simp only [Nat.not_lt, Nat.le_zero] at h
+    constructor
+    · intro hHalt
+      unfold HaltsProg Halts progTrace at hHalt
+      obtain ⟨k, hk⟩ := hHalt
+      have := progLoop_never_halts k
+      rw [this] at hk
+      simp at hk
+    · intro hq
+      omega
+
+/-- **Dissociation (Bit)**: Already proven as `bit_halts_iff`.
+    Bit halting depends ONLY on OmegaBit n — purely semantic. -/
+theorem bit_semantic_dependence (n : ℕ) (a : Bool) :
+    HaltsProg (Bit n a) ↔ OmegaBit n = a :=
+  bit_halts_iff n a
+
+/-- **Orthogonality**: Cut and Bit properties are independent.
+    The Cut parameter q is a natural number, completely independent of OmegaBit.
+    Changing q cannot affect OmegaBit n, and vice versa. -/
+theorem cut_bit_orthogonal (q : ℕ) (n : ℕ) (a : Bool) :
+    -- Cut halting is determined by q alone
+    (HaltsProg (Cut q) ↔ q > 0) ∧
+    -- Bit halting is determined by OmegaBit alone
+    (HaltsProg (Bit n a) ↔ OmegaBit n = a) :=
+  ⟨cut_halts_iff q, bit_halts_iff n a⟩
+
+/-- **Invariance (Cut under Bit changes)**:
+    If two Cut programs have the same threshold q, they have the same halting behavior.
+    The Bit value of Omega is irrelevant to Cut halting. -/
+theorem cut_invariant_under_omega (q : ℕ) :
+    -- Cut(q) halts iff q > 0, regardless of what OmegaBit values are
+    HaltsProg (Cut q) ↔ q > 0 :=
+  cut_halts_iff q
+
+/-- **Invariance (Bit under Cut changes)**:
+    If two Bit programs test the same bit position, they have the same halting behavior.
+    The Cut threshold is irrelevant to Bit halting. -/
+theorem bit_invariant_under_cut (n : ℕ) (a : Bool) :
+    -- Bit(n,a) halts iff OmegaBit n = a, regardless of any Cut parameter
+    HaltsProg (Bit n a) ↔ OmegaBit n = a :=
+  bit_halts_iff n a
+
+
 /-! ## 10. AC_dyn: Dynamic Choice Operator -/
 
 /-- Witness type = step count. -/
@@ -680,6 +756,13 @@ theorem concrete_no_AC_internalisation :
 - `countHalted_progLoop`: countHalted N progLoop = 0
 - `HaltsProg_eq_Rev0`: Link to Rev0 via concrete RHKit
 
+### Dissociation Theorems (Section 9b)
+- `cut_halts_iff`: Cut halting depends ONLY on q (syntactic)
+- `bit_semantic_dependence`: Bit halting depends ONLY on OmegaBit (semantic)
+- `cut_bit_orthogonal`: Cut and Bit properties are independent
+- `cut_invariant_under_omega`: Cut invariant under Omega changes
+- `bit_invariant_under_cut`: Bit invariant under Cut changes
+
 ### Key Results
 - `DR0`, `DR1`: Derived from Rev dynamics
 - `haltsWithinBool_mono`: Halting monotonicity
@@ -691,6 +774,7 @@ theorem concrete_no_AC_internalisation :
 ### The Separation
 - **Computable**: Programs, traces, delta, OmegaBit, Cut, Bit, encode/decode
 - **Non-computable**: HaltsProg (∃), haltingOracle
+- **Dissociation**: Cut (syntactic) ⊥ Bit (semantic) — orthogonal coordinates
 - **AC_dyn**: Crosses the syntactic/semantic boundary — cannot be internalized
 -/
 
